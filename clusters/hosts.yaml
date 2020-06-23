@@ -21,3 +21,23 @@ all:
       ansible_host: 192.168.1.174
       ip: 192.168.1.174
       access_ip: 192.168.1.174
+  children:
+    kube-master:
+      hosts:
+        centos1:
+    kube-node:
+      hosts:
+        centos1:
+        centos2:
+        centos3:
+        centos4:
+        centos5:
+    etcd:
+      hosts:
+        centos1:
+    k8s-cluster:
+      children:
+        kube-master:
+        kube-node:
+    calico-rr:
+      hosts: {}
