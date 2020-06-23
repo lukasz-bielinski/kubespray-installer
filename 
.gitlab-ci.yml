@@ -1,0 +1,29 @@
+image: lukaszbielinski/kubespray-installer:latest
+
+services:
+  - docker:dind
+
+stages:
+  - Ping Base
+  # - Build Variants
+  # - Push Images
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+build-base:
+  stage: Ping Base
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ./clusters/
+  except:
+    - pushes
+  tags:
+    - docker
+  # before_script:
+  #   - mkdir ./images
+  script:
+    - ls -lla
+    - home/containeruser/.local/bin/ansible-playbook --user root -i clusters/hosts.yaml -m ping all

@@ -1,0 +1,5 @@
+*known_hosts
+*.creds
+*admin.conf
+*artifacts
+*rsa*
