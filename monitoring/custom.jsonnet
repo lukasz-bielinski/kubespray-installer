@@ -14,33 +14,6 @@ local pvc = k.core.v1.persistentVolumeClaim;  // https://kubernetes.io/docs/refe
 
 local kp =
   (import 'kube-prometheus/kube-prometheus.libsonnet') +
-  {
-   _config+:: {
-     alertmanager+: {
-       config: |||
-         global:
-           resolve_timeout: 10m
-         route:
-           group_by: ['job']
-           group_wait: 30s
-           group_interval: 5m
-           repeat_interval: 12h
-           receiver: 'email_config'
-         receivers:
-         - name: 'email_config'
-           email_configs:
-           - to: 'admin@example.com'
-             from: 'admin@example.com'
-             smarthost: 'smtp.example.com:587'
-             auth_username: 'admin@example.com'
-             auth_password: '<email_password_or_token>'
-             auth_secret: 'admin@example.com'
-             auth_identity: 'admin@example.com'
-             send_resolved: true
-       |||,
-     },
-   },
- }).alertmanager.secret
   (import 'kube-prometheus/kube-prometheus-kubespray.libsonnet')+
   // Uncomment the following imports to enable its patches
   // (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
@@ -49,14 +22,18 @@ local kp =
   // (import 'kube-prometheus/kube-prometheus-static-etcd.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-thanos-sidecar.libsonnet') +
   {
-    _config+:: {
+    _config+::{
       namespace: 'monitoring',
+      alertmanager+:: {
+        config: importstr 'alertmanager-config.yaml',
+      },
     },
 
+
     /* nodeexporter */
-        nodeExporter+:: {
+        /* nodeExporter+:: {
           port: 8811,
-        },
+        }, */
     prometheus+:: {
 
       prometheus+: {
@@ -92,8 +69,9 @@ local kp =
         },  // spec
       },  // prometheus
     },  // prometheus
-
+ */
   };
+
 
 { ['setup/0namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
 {
