@@ -6,11 +6,13 @@ KUBE_PROMETHEUS_RELEASE=release-0.4
 rm -rf kube-prometheus || exit
 git clone https://github.com/coreos/kube-prometheus
 cp $CUSTOM_FILE kube-prometheus/
+cp alertmanager-config.yaml kube-prometheus/
+
 cd kube-prometheus || exit
 git checkout $KUBE_PROMETHEUS_RELEASE
 
 docker run --rm -v "$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci jb update
-docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci ./build.sh custom.jsonnet
+docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci ./build.sh $CUSTOM_FILE
 
 #OLD
 # my-kube-prometheus
