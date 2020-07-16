@@ -31,19 +31,28 @@ local kp =
       name: 'main',
       config: |||
         global:
-          resolve_timeout: 5m
+          resolve_timeout: 10m
         route:
-          group_by: ['dupa']
+          group_by: ['job']
           group_wait: 30s
           group_interval: 5m
           repeat_interval: 12h
           receiver: 'null'
           routes:
-          - match:
-              alertname: Watchdog
-            receiver: 'null'
+          /* - match:
+              alertname: Watchdog */
+            receiver: 'email_config'
         receivers:
-        - name: 'null'
+        - name: 'email_config'
+          email_configs:
+          - to: 'admin@example.com'
+            from: 'admin@example.com'
+            smarthost: 'smtp.example.com:587'
+            auth_username: 'admin@example.com'
+            auth_password: '<email_password_or_token>'
+            auth_secret: 'admin@example.com'
+            auth_identity: 'admin@example.com'
+            send_resolved: true
       |||,
       replicas: 3,
     },
