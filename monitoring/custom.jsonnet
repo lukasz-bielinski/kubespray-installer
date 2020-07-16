@@ -14,6 +14,33 @@ local pvc = k.core.v1.persistentVolumeClaim;  // https://kubernetes.io/docs/refe
 
 local kp =
   (import 'kube-prometheus/kube-prometheus.libsonnet') +
+  {
+   _config+:: {
+     alertmanager+: {
+       config: |||
+         global:
+           resolve_timeout: 10m
+         route:
+           group_by: ['job']
+           group_wait: 30s
+           group_interval: 5m
+           repeat_interval: 12h
+           receiver: 'email_config'
+         receivers:
+         - name: 'email_config'
+           email_configs:
+           - to: 'admin@example.com'
+             from: 'admin@example.com'
+             smarthost: 'smtp.example.com:587'
+             auth_username: 'admin@example.com'
+             auth_password: '<email_password_or_token>'
+             auth_secret: 'admin@example.com'
+             auth_identity: 'admin@example.com'
+             send_resolved: true
+       |||,
+     },
+   },
+ }).alertmanager.secret
   (import 'kube-prometheus/kube-prometheus-kubespray.libsonnet')+
   // Uncomment the following imports to enable its patches
   // (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
@@ -24,37 +51,6 @@ local kp =
   {
     _config+:: {
       namespace: 'monitoring',
-    },
-
-    /* alertmanager */
-    alertmanager+:: {
-      name: 'main',
-      config: |||
-        global:
-          resolve_timeout: 10m
-        route:
-          group_by: ['job']
-          group_wait: 30s
-          group_interval: 5m
-          repeat_interval: 12h
-          receiver: 'null'
-          routes:
-          /* - match:
-              alertname: Watchdog */
-            receiver: 'email_config'
-        receivers:
-        - name: 'email_config'
-          email_configs:
-          - to: 'admin@example.com'
-            from: 'admin@example.com'
-            smarthost: 'smtp.example.com:587'
-            auth_username: 'admin@example.com'
-            auth_password: '<email_password_or_token>'
-            auth_secret: 'admin@example.com'
-            auth_identity: 'admin@example.com'
-            send_resolved: true
-      |||,
-      replicas: 3,
     },
 
     /* nodeexporter */
