@@ -15,16 +15,16 @@ local pvc = k.core.v1.persistentVolumeClaim;  // https://kubernetes.io/docs/refe
 local kp =
   (import 'kube-prometheus/kube-prometheus.libsonnet') +
   (import 'kube-prometheus/kube-prometheus-kubespray.libsonnet')+
+  // Uncomment the following imports to enable its patches
   (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
   (import 'kube-prometheus/kube-prometheus-strip-limits.libsonnet') +
-  // Uncomment the following imports to enable its patches
-  // (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
+
   // (import 'kube-prometheus/kube-prometheus-managed-cluster.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-node-ports.libsonnet') +
-  // (import 'kube-prometheus/kube-prometheus-static-etcd.libsonnet') +
+ // (import 'kube-prometheus/kube-prometheus-static-etcd.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-thanos-sidecar.libsonnet') +
   {
-    _config+::{
+    _config+:: {
       namespace: 'monitoring',
       alertmanager+:: {
         config: importstr 'alertmanager-config.yaml',
@@ -40,37 +40,10 @@ local kp =
     },
 
 
-        prometheusAlerts+:: {
-          groups+: (import 'rules.yaml.json').groups,
-        },
+    prometheusAlerts+:: {
+      groups+: (import 'rules.yaml.json').groups,
+    },
 
-    /* alertmanager */
-    /* alertmanager+:: {
-      name: 'main',
-      config: |||
-        global:
-          resolve_timeout: 5m
-        route:
-          group_by: ['dupa']
-          group_wait: 30s
-          group_interval: 5m
-          repeat_interval: 12h
-          receiver: 'null'
-          routes:
-          - match:
-              alertname: Watchdog
-            receiver: 'null'
-        receivers:
-        - name: 'null'
-      |||,
-      replicas: 3,
-    }, */
-
-
-    /* nodeexporter */
-        /* nodeExporter+:: {
-          port: 8811,
-        }, */
     prometheus+:: {
 
       prometheus+: {
@@ -106,9 +79,8 @@ local kp =
         },  // spec
       },  // prometheus
     },  // prometheus
- */
-  };
 
+  };
 
 { ['setup/0namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
 {
