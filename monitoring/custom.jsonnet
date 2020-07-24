@@ -15,6 +15,8 @@ local pvc = k.core.v1.persistentVolumeClaim;  // https://kubernetes.io/docs/refe
 local kp =
   (import 'kube-prometheus/kube-prometheus.libsonnet') +
   (import 'kube-prometheus/kube-prometheus-kubespray.libsonnet')+
+  (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
+  (import 'kube-prometheus/kube-prometheus-strip-limits.libsonnet') +  
   // Uncomment the following imports to enable its patches
   // (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-managed-cluster.libsonnet') +
@@ -24,10 +26,26 @@ local kp =
   {
     _config+:: {
       namespace: 'monitoring',
+      alertmanager+:: {
+        config: importstr 'alertmanager-config.yaml',
+      },
+
+    grafana+:: {
+      container: {
+        requests: { cpu: '100m', memory: '100Mi' },
+        limits: {},
+      },
+      containers: [],
+    },
     },
 
+
+        prometheusAlerts+:: {
+          groups+: (import 'rules.yaml.json').groups,
+        },
+
     /* alertmanager */
-    alertmanager+:: {
+    /* alertmanager+:: {
       name: 'main',
       config: |||
         global:
@@ -46,12 +64,12 @@ local kp =
         - name: 'null'
       |||,
       replicas: 3,
-    },
+    }, */
 
     /* nodeexporter */
-        nodeExporter+:: {
+        /* nodeExporter+:: {
           port: 8811,
-        },
+        }, */
     prometheus+:: {
 
       prometheus+: {

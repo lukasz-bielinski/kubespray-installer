@@ -17,10 +17,19 @@ cd kube-prometheus || exit
 git checkout $KUBE_PROMETHEUS_RELEASE
 
 go get -u -v github.com/brancz/gojsontoyaml
-cat $CUSTOM_RULE | /root/go/bin/gojsontoyaml -yamltojson >$CUSTOM_RULE.json
+cat $CUSTOM_RULE | gojsontoyaml -yamltojson >$CUSTOM_RULE.json
 
 docker run --rm -v "$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci jb update
 docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci ./build.sh custom.jsonnet
+
+cp ../additional-scrape-configs.yaml manifests/
+cp ../psp-monitoring.yaml manifests/
+
+sed -i '/^  storage:.*/i\  additionalScrapeConfigs:\n    name: additional-scrape-configs\n    key: prometheus-additional.yaml' manifests/prometheus-prometheus.yaml
+
+rm -f manifests/alertmanager-config.yaml
+rm -f manifests/alertmanager-name.yaml
+rm -f manifests/alertmanager-replicas.yaml
 
 #OLD
 # my-kube-prometheus
