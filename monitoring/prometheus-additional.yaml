@@ -1,0 +1,27 @@
+- job_name: "pgdb1"
+  static_configs:
+  - targets: ["pgdb1.dev.corpo.project.local:9187"]
+- job_name: "pgdb2"
+  static_configs:
+  - targets: ["pgdb2.dev.corpo.project.local:9187"]
+- job_name: "pgdb1.dev.corpo.project.local"
+  static_configs:
+  - targets: ["pgdb1.dev.corpo.project.local:9100"]
+- job_name: "pgdb2.dev.corpo.project.local"
+  static_configs:
+  - targets: ["pgdb2.dev.corpo.project.local:9100"]
+- job_name: "pgpool1.dev.corpo.project.local"
+  static_configs:
+  - targets: ["pgpool1.dev.corpo.project.local:9100"]
+- job_name: "pgpool2.dev.corpo.project.local"
+  static_configs:
+  - targets: ["pgpool2.dev.corpo.project.local:9100"]
+- job_name: "pgpool3.dev.corpo.project.local"
+  static_configs:
+  - targets: ["pgpool3.dev.corpo.project.local:9100"]
+- job_name: "elk1.dev.corpo.project.local"
+  static_configs:
+  - targets: ["elk1.dev.corpo.project.local:9100"]
+- job_name: "elk2.dev.corpo.project.local"
+  static_configs:
+  - targets: ["elk2.dev.corpo.project.local:9100"]
