@@ -20,7 +20,7 @@ go get -u -v github.com/brancz/gojsontoyaml
 cat $CUSTOM_RULE | gojsontoyaml -yamltojson >$CUSTOM_RULE.json
 
 docker run --rm -v "$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci jb update
-docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci ./build.sh custom.jsonnet
+docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci ./build.sh $CUSTOM_FILE
 
 cp ../additional-scrape-configs.yaml manifests/
 cp ../psp-monitoring.yaml manifests/

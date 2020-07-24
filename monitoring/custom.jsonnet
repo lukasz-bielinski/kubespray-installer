@@ -16,7 +16,7 @@ local kp =
   (import 'kube-prometheus/kube-prometheus.libsonnet') +
   (import 'kube-prometheus/kube-prometheus-kubespray.libsonnet')+
   (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
-  (import 'kube-prometheus/kube-prometheus-strip-limits.libsonnet') +  
+  (import 'kube-prometheus/kube-prometheus-strip-limits.libsonnet') +
   // Uncomment the following imports to enable its patches
   // (import 'kube-prometheus/kube-prometheus-anti-affinity.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-managed-cluster.libsonnet') +
@@ -24,7 +24,7 @@ local kp =
   // (import 'kube-prometheus/kube-prometheus-static-etcd.libsonnet') +
   // (import 'kube-prometheus/kube-prometheus-thanos-sidecar.libsonnet') +
   {
-    _config+:: {
+    _config+::{
       namespace: 'monitoring',
       alertmanager+:: {
         config: importstr 'alertmanager-config.yaml',
@@ -66,6 +66,7 @@ local kp =
       replicas: 3,
     }, */
 
+
     /* nodeexporter */
         /* nodeExporter+:: {
           port: 8811,
@@ -105,8 +106,9 @@ local kp =
         },  // spec
       },  // prometheus
     },  // prometheus
-
+ */
   };
+
 
 { ['setup/0namespace-' + name]: kp.kubePrometheus[name] for name in std.objectFields(kp.kubePrometheus) } +
 {
