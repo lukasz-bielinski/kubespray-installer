@@ -5,10 +5,10 @@ export $(shell sed 's/=.*//' $(dpl))
 # DOCKER TASKS
 # Build the container
 build: ## Build the container
-	docker build -t $(APP_NAME) .
+	DOCKER_BUILDKIT=1 docker build -t $(APP_NAME) .
 
 build-nc: ## Build the container without caching
-	docker build --no-cache -t $(APP_NAME) .
+	DOCKER_BUILDKIT=1 docker build --no-cache -t $(APP_NAME) .
 
 run: ## Run container on port configured in `config.env`
 	docker run --name $(APP_NAME) -it  $(DOCKER_REPO)/$(APP_NAME):latest  bash

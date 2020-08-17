@@ -1,8 +1,8 @@
 FROM centos:8
-ENV KUBESPRAY_VERSION="v2.13.2"
+ENV KUBESPRAY_VERSION="v2.13.3"
 ENV ANSIBLE_JINJA2_NATIVE=True
 ENV ANSIBLE_HOST_KEY_CHECKING=False
-ENV ANSIBLE_FORKS 10
+ENV ANSIBLE_FORKS 40
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
@@ -10,7 +10,7 @@ ENV LANGUAGE en_US:en
 RUN yum update -y -v && \
     yum upgrade -y && \
     yum install -y langpacks-en glibc-all-langpacks epel-release && \
-    yum install -y  python3-pip  python3 rsync git sed gcc python3-devel unzip sshpass && \
+    yum install -y  python3-pip  python3 rsync git sed gcc python3-devel unzip sshpass jq && \
     yum clean all && rm -rf /var/cache/yum/* && \
     sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.conf
 
