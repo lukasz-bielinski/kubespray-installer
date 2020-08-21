@@ -21,6 +21,7 @@ cat $CUSTOM_RULE | gojsontoyaml -yamltojson >$CUSTOM_RULE.json
 
 docker run --rm -v "$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci jb update
 docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci ./build.sh $CUSTOM_FILE
+docker run --rm -v"$(pwd)":"$(pwd)" --workdir "$(pwd)" quay.io/coreos/jsonnet-ci jsonnet -J vendor -S --tla-str repository=lukaszbielinski sync-to-internal-registry.jsonnet | tee -a push_to_private_repo.sh
 
 cp ../additional-scrape-configs.yaml manifests/
 cp ../psp-monitoring.yaml manifests/
