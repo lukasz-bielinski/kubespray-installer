@@ -3,4 +3,4 @@
 *admin.conf
 *artifacts
 *rsa*
-*kube-prometheus
+kube-prometheus

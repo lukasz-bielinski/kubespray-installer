@@ -1,5 +1,5 @@
 FROM centos:8
-ENV KUBESPRAY_VERSION="v2.13.3"
+ENV KUBESPRAY_VERSION="v2.14.0"
 ENV ANSIBLE_JINJA2_NATIVE=True
 ENV ANSIBLE_HOST_KEY_CHECKING=False
 ENV ANSIBLE_FORKS 40
@@ -34,6 +34,6 @@ RUN cd /home/containeruser/kubespray && \
 
 ## FIXES
 # https://github.com/kubernetes-sigs/kubespray/pull/6103
-RUN sed -i 's|pod_infra_version\: 3\.1|pod_infra_version\: "3\.1"|g' /home/containeruser/kubespray/roles/download/defaults/main.yml
+#RUN sed -i 's|pod_infra_version\: 3\.1|pod_infra_version\: "3\.1"|g' /home/containeruser/kubespray/roles/download/defaults/main.yml
 # Removing inproper regex replace
-RUN sed -i -e '223,226d'  /home/containeruser/kubespray/roles/kubernetes/master/templates/kubeadm-config.v1beta2.yaml.j2
+#RUN sed -i -e '223,226d'  /home/containeruser/kubespray/roles/kubernetes/master/templates/kubeadm-config.v1beta2.yaml.j2
