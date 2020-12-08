@@ -1,0 +1,79 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  ENV_TYPE: "prod"
+#  -e "{'download_run_once': true }" -e "{'download_localhost': false }" 
+image: lukaszbielinski/kubespray-installer:latest
+before_script:
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo "$SSH_PUBLIC_KEY" > ~/.ssh/id_rsa.pub
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - cat  ~/.ssh/id_rsa.pub
+  - cat  ~/.ssh/id_rsa
+
+
+stages:
+  - SSH key 
+  - Check hosts
+  - Run prerequisities
+  - Install kubernetes
+  # - Push Images
+
+SSH-key:
+  stage: SSH key 
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ./clusters/
+  except:
+    - pushes
+  tags:
+    - docker
+  script:
+    - /bin/bash /builds/k8s-install/clusters/prerequisites-playbooks/add_key.sh
+
+Ping-hosts:
+  stage: Check hosts 
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ./clusters/
+  except:
+    - pushes
+  tags:
+    - docker
+  script:
+    - /home/containeruser/.local/bin/ansible --user root -i $(pwd)/clusters/$ENV_TYPE/hosts.yaml -m ping all
+
+Run-prerequisities:
+  stage: Run prerequisities
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ./clusters/
+  except:
+    - pushes
+  tags:
+    - docker
+  script:
+    - /home/containeruser/.local/bin/ansible-playbook --user root -i /builds/k8s-install/clusters/$ENV_TYPE/hosts.yaml --become --become-user=root /builds/k8s-install/clusters/prerequisites-playbooks/start.yaml
+
+
+Install-kubernetes:
+  stage: Install kubernetes
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ./clusters/
+  except:
+    - pushes
+  tags:
+    - docker
+  script:
+    - whoami
+    - cd /home/containeruser/kubespray
+    - cat /builds/k8s-install/clusters/$ENV_TYPE/hosts.yaml
+    -  /home/containeruser/.local/bin/ansible-playbook --user root -i /builds/k8s-install/clusters/$ENV_TYPE/hosts.yaml   --become --become-user=root cluster.yml
